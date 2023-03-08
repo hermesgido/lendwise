@@ -1,0 +1,210 @@
+{% include 'base.html' %}
+
+{% block content %}
+  {% load static %}
+  {% load humanize %}
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+      {% include 'sidebar.html' %}
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 ">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-align-left primary-text fs-4 me-3" id="menu-toggle"></i>
+                    <h2 class="fs-2 m-0 text-white">View Loan</h2>
+                </div>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle second-text fw-bold" href="#" id="navbarDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user me-2 text-white"></i>Admin
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#">Profile</a></li>
+                                <li><a class="dropdown-item" href="#">Settings</a></li>
+                                <li><a class="dropdown-item" href="#">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="container-fluid px-4">
+               
+
+                <div class="row my-5">
+                   
+
+                    <div class="form-warpp bg-white p-3 rounded">
+
+                        {{sms_form.errors}}
+
+                        {% if messages %}
+                            
+                            {% for message in messages %}
+                            <div class="alert alert-info alert-dissmissable">
+                                {{message}}
+
+                            </div>
+                            {% endfor %}
+                                
+
+                        {% endif %}
+                            
+                            <div class="d-flex justify-content-between">
+                                <div class="one-box">
+                                    <strong> Name: </strong>  {{loan.client.first_name}} {{loan.client.last_name}}<br>
+                                        <strong> ID: </strong>  {{loan.id}}<br>
+                                            <strong> Amount:</strong>  {{loan.loan_amount | intcomma}} <br>
+                                                <strong> Created At: </strong> {{loan.created_at | date}}<br>
+                                                    <strong> DOB:</strong>  {{loan.client.date_of_birth}} <br>
+
+                                                    <div class="p-1">
+
+                                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#payModal" class="btn btn-primary p-1">PAY</button>
+                                                </div>
+                                                
+                                </div>
+                                <div class="one-box">
+                                 <strong>Principle:</strong>   {{loan.loan_amount | intcomma}} Tsh  <br>
+                                 <strong>   Paid:</strong> {{loan.loan_amount | intcomma}} Tsh <br>
+                                 <strong> Debt: </strong> {{loan.loan_amount | intcomma}} Tsh <br>
+                                 <strong> Interest: </strong> {{loan.interest_rate}} % <br>
+
+                                
+
+                                </div>
+                                <div class="one-box">
+                                    Name: <br>
+                                    ID: <br>
+                                    Amount: <br>
+                                    Created At: <br>
+                                    DOB: <br>
+                                    <div class="d-flex">
+                                        <div class="p-1">
+
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-primary p-1">SEND SMS</button>
+                                        </div>
+                                        
+        
+                                        <div class="p-1">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal2" class="btn btn-primary p-1">SEND EMAIL</button>
+                                        </div>
+                                    </div>
+ 
+                                </div>
+                            
+                        
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+    </div>
+
+
+
+    <!-- Button trigger modal -->
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Send SMS</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+            <form action="" method="post">
+                {{sms_form.errors}}
+
+                {% csrf_token %}
+                {{sms_form}}
+            
+            <br>
+            
+            <div class="d-flex justify-content-center">
+                <button name="send_sms_btn" type="submit" class="btn btn-primary">SEND</button>
+            </div>
+            </form>
+          
+        </div>
+       
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModal2Label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModal2Label">Send EMail</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+<form action="" method="post">
+    {% csrf_token %}
+    {{sms_form}}
+
+<br>
+
+<div class="d-flex justify-content-center">
+    <button name="" type="submit" class="btn btn-primary">SEND</button>
+</div>
+</form>
+
+          
+        </div>
+       
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="modal fade" id="payModal" tabindex="-1" aria-labelledby="payModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="payModalLabel">Send SMS</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="am">
+                    <label for="amount">Amount</label>
+                    <input class="form-control" type="number" name="amount" id="" >
+                </div>
+            
+            <br>
+            
+            <div class="d-flex justify-content-center">
+                <button name="pay" type="submit" class="btn btn-primary">PAY</button>
+            </div>
+            </form>
+          
+        </div>
+       
+      </div>
+    </div>
+  </div>
+
+    
+    {% endblock content %}
+  

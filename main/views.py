@@ -7,16 +7,69 @@ from django.contrib import messages
 from . import send_sms
 
 import requests
-from decouple import config
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 
+from decouple import config
+from django.contrib.auth.decorators import login_required 
 from BeemAfrica import Authorize, AirTime, OTP, SMS
 Authorize(config("BEEM_API_KEY"), config("BEEM_SECRET_KEY"))
 
 # Create your views here.
+
+def signup(request):
+    
+    if request.method == "POST":
+        email = request.POST['email']
+        password = request.POST['password']
+        if User.objects.filter(username=email).exists():
+            messages.error(request, "User alredy exist")
+            return redirect(signup)
+        else:
+            user = User.objects.create_user(username=email, password=password)
+            messages.success(request, "Successfull Registered")
+            return redirect(signin)
+
+    return render(request, "main/signup.html")
+
+def signin(request):
+    if request.method == "POST":
+        email2 = request.POST['email']
+        password = request.POST['password']
+        
+        if User.objects.filter(username=email2).exists():
+            user = authenticate(username= email2, password = password)
+            print(user)
+            if user is not None:
+                login(request=request, user=user)
+                messages.success(request, "Successfull Loged In")
+                return redirect("/")
+            else:
+                messages.error(request, "Something Went Wrong")
+                return redirect(signin)
+        else:
+            messages.error(request, "User Does Not Exist")
+            return redirect(signin)
+  
+    return render(request, "main/signin.html")
+
+
+def logout_user(request):
+    logout(request)
+    return redirect(home)
+
+
+@login_required
 def home(request):
-    return render(request, 'main/home.html')
+    clients = Client.objects.all().count()
+    open_loans = Loan.objects.filter(status="Active").count()
+    paid_loans = Loan.objects.filter(status="Complited").count()
+    loan_amount = sum(loan.loan_amount for loan in Loan.objects.all())
+    
+    context = {"open_loans": open_loans, "paid_loans": paid_loans, "loan_amount": loan_amount, "clients":clients}  
+    return render(request, 'main/home.html', context)
 
-
+@login_required
 def clients(request):
     clients_list = Client.objects.all()
     
@@ -25,7 +78,7 @@ def clients(request):
     }
     return render(request, 'main/clients.html', context)
 
-
+@login_required
 def add_client(request):
     form = ClientForm
     if request.method == "POST":
@@ -39,6 +92,8 @@ def add_client(request):
     }
     return render(request, 'main/add_client.html', context)
 
+
+@login_required
 def loans(request):
     loans_list = Loan.objects.all()
     filter =  LoanFilter
@@ -56,6 +111,7 @@ def loans(request):
     }
     return render(request, 'main/loans.html', context)
 
+@login_required
 def add_loan(request):
     form = LoanForm
     if request.method == "POST":
@@ -65,6 +121,8 @@ def add_loan(request):
             messages.success(request, "New Loan Added Successfull")
             return redirect(loans)
         messages.success(request, "Something went Wrong")
+        return redirect(loans)
+
 
     
     context = {
@@ -72,6 +130,7 @@ def add_loan(request):
     }
     
     return render(request, 'main/add_loan.html', context)
+
 
 def view_loan(request, id):
     loan = Loan.objects.get(id=id)

@@ -51,6 +51,19 @@
 </div>
                 <div class="row my-5">
                     <h3 class="fs-4 mb-3 text-white"> </h3>
+
+                    
+                    {% if messages %}
+                        
+                        {% for message in messages %}
+                        <div class="alert-info alert">
+                            {{message}}
+
+                        </div>
+                        {% endfor %}
+                            
+                    {% endif %}
+                        
                     <form action="" method="get">
 
                 <div class="d-flex flex-wrap ">
